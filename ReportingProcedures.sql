@@ -1,6 +1,6 @@
 ----------------------REPORTING PROCEDURES-------------------
 /*
-•	Report that returns the students information according to Department No parameter.
+â€¢	Report that returns the students information according to Department No parameter.
 */
 
 CREATE OR ALTER PROC Get_Student_info_By_track
@@ -26,7 +26,7 @@ EXEC Get_Student_info_By_track
 DROP PROC Get_Student_info_By_track
 
 /*
-•	Report that takes the student ID and returns the grades of the student in all courses. %
+â€¢	Report that takes the student ID and returns the grades of the student in all courses. %
 */
 
 
@@ -54,7 +54,7 @@ EXEC Get_St_grades 1
 DROP PROC Get_St_grades
 
 /*
-•Report that takes the instructor ID and returns the name of the courses that he teaches and the number of student per course.
+â€¢Report that takes the instructor ID and returns the name of the courses that he teaches and the number of student per course.
 
 */
 
@@ -80,3 +80,28 @@ AS
 EXEC Get_Courses_Instructor_Teaches 7
 
 DROP PROC Get_Courses_Instructor_Teaches
+
+/*
+Report that takes course ID and returns its topics  
+*/
+CREATE OR ALTER PROCEDURE retTopics @CourseID INT
+AS
+SELECT Topic_Name
+FROM Topic t
+JOIN Course_Topic ct
+ON ct.Topic_ID = t.Topic_ID
+WHERE ct.Course_ID = @CourseID
+
+/*
+Report that takes exam number and returns the Questions in it and chocies 
+*/
+
+CREATE OR ALTER PROCEDURE retExam @ExamID INT
+AS
+SELECT Question, Choice
+FROM Question q
+JOIN Exam_Quest eq
+ON q.Question_ID = eq.Question_ID
+JOIN Choice c
+ON c.Question_ID = q.Question_ID
+WHERE Exam_ID = @ExamID
