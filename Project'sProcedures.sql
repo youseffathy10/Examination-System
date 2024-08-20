@@ -58,7 +58,7 @@ AS
 	END
 
 
-EXEC  Register_New_Member 'Ghadasayed@gmail.com','Ghadasayed',654321,'Instructor',2,15
+
 
 
 ---SELECT
@@ -80,7 +80,7 @@ AS
 		END
 	END
 
-EXEC Select_registered_member  'AmenaSaleh@gmail.com','AmenaSaleh'
+
 
 
 --UPDATE
@@ -110,7 +110,7 @@ AS
 		END
 	END
 
-EXEC update_registered_member_info 21,'Yousef@gmail.com','Yousef'
+
 
 
 ---DELETE
@@ -126,7 +126,7 @@ AS
 		WHERE Register_ID = @reg_id 
 	END
 
-EXEC Delete_registered_member 21
+
 
 
 ---------------------------INTAKE PROCEDURE--------------------------
@@ -153,7 +153,7 @@ AS
 	END
 
 
-EXEC Insert_New_Intake 45, 'Menoufia','2019-03-01','2019-07-01'
+
 
 
 ----SELECT
@@ -173,7 +173,6 @@ AS
 		WHERE intake_id=@intake_id 
 	END
 
-EXEC Select_Intake 45
 
 ----UPDATE
 CREATE PROC Update_intake
@@ -198,7 +197,7 @@ AS
 		END
 	END
 
-EXEC Update_intake 45, 'Tanta'
+
 
 
 ---DELETE
@@ -215,7 +214,6 @@ AS
 	END
 
 
-Exec Delete_intake 45
 
 
 
@@ -242,7 +240,7 @@ AS
 		END
 	END
 
-EXEC INSERT_Track 'MotioN','Designer',1
+
 
 
 --SELECT
@@ -261,7 +259,7 @@ AS
 		WHERE TrackID = @TrackID
 	END
 
- EXEC SelectTrack 1
+
 
  --UPDATE
  ALTER PROC UpdateTrack
@@ -296,7 +294,7 @@ AS
 		END
 	END
 
-EXEC UpdateTrack 7,'Motionssssssss'
+
 
 
 --DELETE 
@@ -312,7 +310,7 @@ AS
 		WHERE TrackID = @TrackID
 	END
 
-EXEC DeleteTrack 7
+
 
 
 
@@ -329,6 +327,6 @@ DROP COLUMN Track_ID;
 
 ----------------------REPORTING PROCEDURES-------------------
 /*
-•	Report that returns the students information according to Department No parameter.
+â€¢	Report that returns the students information according to Department No parameter.
 */
 
