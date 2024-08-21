@@ -325,8 +325,136 @@ ALTER TABLE TRACK
 DROP COLUMN Track_ID;
 
 
-----------------------REPORTING PROCEDURES-------------------
-/*
-•	Report that returns the students information according to Department No parameter.
-*/
+-------------------------- INSERT STUDENT TABLE 
+CREATE OR ALTER PROC InsertStudent 
+    @st_SSN INT,
+    @ST_Fname VARCHAR(50),
+    @ST_Lname VARCHAR(50),
+    @ST_BirthDate DATE,
+    @ST_City VARCHAR(20),
+    @ST_Gender VARCHAR(6),
+    @Intake_ID INT,
+    @Track_ID INT
+
+WITH ENCRYPTION 
+AS 
+BEGIN
+    
+    IF EXISTS(SELECT 1 FROM STUDENT WHERE st_SSN = @st_SSN)
+    BEGIN
+        SELECT 'The student is already found' AS Message;
+    END
+    ELSE
+    BEGIN
+		IF EXISTS(SELECT 1 FROM Intake WHERE Intake_ID = @Intake_ID)
+			BEGIN
+				IF EXISTS(SELECT 1 FROM Track WHERE TrackID = @Track_ID)
+					BEGIN
+						DECLARE @ST_Age INT;
+						SET @ST_Age = DATEDIFF(YEAR, @ST_BirthDate, GETDATE());
+
+						INSERT INTO STUDENT(ST_ID, ST_SSN, ST_Fname, ST_Lname, ST_BirthDate, ST_Age, ST_City, ST_Gender, Intake_ID, Track_ID)
+						VALUES (
+							(SELECT ISNULL(MAX(ST_ID), 0) + 1 FROM STUDENT), 
+							@st_SSN, 
+							@ST_Fname, 
+							@ST_Lname, 
+							@ST_BirthDate, 
+							@ST_Age, 
+							@ST_City, 
+							@ST_Gender, 
+							@Intake_ID, 
+							@Track_ID
+						);
+
+						SELECT 'Student record inserted successfully' AS Message;
+					END
+				ELSE 
+					SELECT 'The track is not found'
+
+			END
+		ELSE
+		SELECT 'INTAKE IS NOT FOUND' AS WARNING
+    END
+END;
+
+
+
+
+
+---------------SELECT STUDENT----------------------------------
+
+CREATE OR ALTER PROC SELECT_STUDENT
+@ST_ID INT
+WITH ENCRYPTION
+AS
+	BEGIN
+		IF NOT EXISTS(SELECT 1 FROM STUDENT WHERE ST_ID = @ST_ID)
+			SELECT 'THE Student is not found '
+		ELSE 
+			BEGIN
+				SELECT *
+				FROM STUDENT 
+				WHERE ST_ID = @ST_ID
+			END
+	END
+
+---Test----
+EXECUTE SELECT_STUDENT 1
+
+----------------DELETE--------------------------------------
+CREATE OR ALTER PROC DELETE_STUDENT
+@ST_ID INT 
+WITH ENCRYPTION 
+AS
+	BEGIN
+		IF EXISTS(SELECT 1 FROM STUDENT WHERE ST_ID = @ST_ID)
+			BEGIN
+				DELETE FROM STUDENT
+				WHERE ST_ID = @ST_ID
+			END
+		ELSE
+			SELECT 'The student is not found' 
+			
+	END
+
+
+
+
+------UPDATE----------------------------------
+CREATE OR ALTER PROC UpdateStudent
+@ST_ID INT,
+@st_SSN INT=NULL,
+@ST_Fname VARCHAR(50)=NULL,
+@ST_Lname VARCHAR(50)=NULL,
+@ST_BirthDate DATE=NULL,
+@ST_City VARCHAR(20)=NULL,
+@ST_Gender VARCHAR(6)=NULL,
+@Intake_ID INT=NULL,
+@Track_ID INT=NULL
+
+WITH ENCRYPTION 
+AS
+	BEGIN
+		IF NOT EXISTS (SELECT 1 FROM STUDENT WHERE ST_ID = @ST_ID)
+			SELECT 'The student is not found ' AS Warning
+		ELSE
+			BEGIN
+				DECLARE @ST_Age INT;
+				SET @ST_Age = DATEDIFF(YEAR, @ST_BirthDate, GETDATE());
+
+				UPDATE Student
+				SET ST_SSN = COALESCE(@st_SSN,ST_SSN),
+					ST_Fname =COALESCE(@st_Fname,ST_fname),
+					ST_Lname = COALESCE(@ST_Lname,ST_Lname),
+					ST_BirthDate= COALESCE(@ST_BirthDate,ST_BirthDate),
+					ST_Age = @ST_Age,
+					ST_City = COALESCE(@ST_City,ST_City),
+					ST_Gender=COALESCE(@ST_Gender,ST_Gender),
+					Intake_ID=COALESCE(@Intake_ID,Intake_ID),
+					Track_ID=COALESCE(@Track_ID,Track_ID)
+				WHERE ST_ID = @ST_ID
+			END
+	END
+
 
