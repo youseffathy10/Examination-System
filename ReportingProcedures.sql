@@ -105,3 +105,15 @@ ON q.Question_ID = eq.Question_ID
 JOIN Choice c
 ON c.Question_ID = q.Question_ID
 WHERE Exam_ID = @ExamID
+	
+/*
+Report that takes exam number and the student ID then returns the Questions in this exam with the student answers. 
+*/
+
+CREATE PROCEDURE retStudentExam @st_id INT, @ex_id INT
+AS
+SELECT q.question, se.student_answer
+FROM Question q
+JOIN Student_Exam se
+ON se.Question_ID = q.Question_ID
+WHERE se.ST_ID = @st_id AND se.Exam_ID = @ex_id
