@@ -96,15 +96,35 @@ WHERE ct.Course_ID = @CourseID
 Report that takes exam number and returns the Questions in it and chocies 
 */
 
-CREATE OR ALTER PROCEDURE retExam @ExamID INT
+-- CREATE OR ALTER PROCEDURE retExam @ExamID INT
+-- AS
+-- SELECT Question, Choice
+-- FROM Question q
+-- JOIN Exam_Quest eq
+-- ON q.Question_ID = eq.Question_ID
+-- JOIN Choice c
+-- ON c.Question_ID = q.Question_ID
+-- WHERE Exam_ID = @ExamID
+
+-----------ANOTHER SOLUTION FOR BETTER UI EXPERIENCE--------------------------
+
+CREATE OR ALTER PROCEDURE [dbo].[retExam] @ExamID INT
 AS
-SELECT Question, Choice
-FROM Question q
-JOIN Exam_Quest eq
-ON q.Question_ID = eq.Question_ID
-JOIN Choice c
-ON c.Question_ID = q.Question_ID
-WHERE Exam_ID = @ExamID
+
+SELECT
+				Q.Question_ID,
+				Q.Question,
+				STRING_AGG(C.Choice, ', ') WITHIN GROUP (ORDER BY C.Choice_ID) AS Choices
+			FROM 
+				Exam_Quest AS EQ
+			INNER JOIN Question AS Q 
+				ON EQ.Question_ID = Q.Question_ID
+			INNER JOIN EXAM AS E 
+				ON E.EXAM_ID = EQ.EXAM_ID AND EQ.EXAM_ID = @ExamID
+			INNER JOIN Choice AS C
+				ON C.Question_ID = Q.Question_ID
+			GROUP BY 
+				Q.Question_ID, Q.Question
 	
 /*
 Report that takes exam number and the student ID then returns the Questions in this exam with the student answers. 
