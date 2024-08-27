@@ -33,11 +33,16 @@ DROP PROC Get_Student_info_By_track
 
 
 CREATE OR ALTER PROC Get_St_grades
-@st_id int 
+@st_id NVARCHAR(MAX)  
 WITH ENCRYPTION
 AS
 	BEGIN
-		IF EXISTS(SELECT 1 FROM Student WHERE ST_ID = @st_id)
+		DECLARE @ParsedStudent_Grades TABLE (st_id NVARCHAR(MAX))
+		INSERT INTO @ParsedStudent_Grades (st_id)
+		SELECT TRIM(value)
+		FROM STRING_SPLIT(@st_id, ',')
+
+		IF EXISTS(SELECT 1 FROM Student WHERE ST_ID IN (SELECT st_id FROM @ParsedStudent_Grades))
 			BEGIN
 				SELECT st.ST_Fname,st.ST_Lname, crs.Course_Name,st_crs.St_Grade
 				FROM Student st
@@ -45,7 +50,7 @@ AS
 				ON st.ST_ID = st_crs.St_ID
 				JOIN Course crs
 				ON st_crs.Course_ID = crs.Course_ID
-				WHERE st.ST_ID = @st_id
+				WHERE st.ST_ID IN (SELECT st_id FROM @ParsedStudent_Grades)
 			END
 	END 
 
@@ -58,11 +63,15 @@ DROP PROC Get_St_grades
 
 */
 
-CREATE OR ALTER PROC Get_Courses_Instructor_Teaches
-@ins_id INT 
+  CREATE OR ALTER PROC Get_Courses_Instructor_Teaches
+@ins_id NVARCHAR(MAX) 
 AS
 	BEGIN
-		 
+		DECLARE @ParsedInstructors TABLE (ins_id NVARCHAR(MAX))
+		INSERT INTO @ParsedInstructors (ins_id)
+		SELECT TRIM(value)
+		FROM STRING_SPLIT(@ins_id, ',')
+
 		 SELECT ins.Instructor_Fname, ins.Instructor_Lname, crs.Course_Name,COUNT(stud.ST_ID) AS [number of students]
 		 FROM Instructor ins
 		 JOIN Inst_Course ins_crs 
@@ -73,8 +82,8 @@ AS
 		 ON st_crs.Course_ID = crs.Course_ID
 		 JOIN Student stud
 		 ON stud.ST_ID = st_crs.St_ID
-		 WHERE ins.Instructor_ID = @ins_id
-		 GROUP BY ins.Instructor_Fname, ins.Instructor_Lname, crs.Course_Name
+		 WHERE ins.Instructor_ID in (SELECT ins_id FROM @ParsedInstructors)
+		 GROUP BY ins.Instructor_Fname, ins.Instructor_Lname, crs.Course_Name;
 	END
 
 EXEC Get_Courses_Instructor_Teaches 7
